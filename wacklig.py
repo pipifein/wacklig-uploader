@@ -50,7 +50,7 @@ def upload_files(server, ci_info, files):
                 tar.add(filename)
         ci_info = {k: v for (k, v) in ci_info.items() if v}
         params = ci_info and '?' + urlencode(ci_info) or ''
-        urlopen(server + '/upload' + params, data=fd)
+        urlopen(server + '/api/v1/upload' + params, data=fd)
 
 
 def main():
