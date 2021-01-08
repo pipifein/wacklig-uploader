@@ -8,6 +8,7 @@ import os
 import argparse
 import tarfile
 import tempfile
+from subprocess import check_output
 from urllib.request import urlopen
 from urllib.parse import urlencode
 from glob import glob
@@ -34,16 +35,27 @@ def get_ci_info():
     if os.environ.get('JENKINS_URL'):
         return jenkins_env()
 
-    return None
+    return {
+        'service': 'local',
+        'branch': check_output(
+            ['git', 'branch', '--show-current'],
+            universal_newlines=True
+        ).strip(),
+        'commit': check_output(
+            ['git', 'rev-parse', 'HEAD'],
+            universal_newlines=True
+        ).strip(),
+    }
 
 
 def find_test_files():
     return glob('**/build/test-results/test/*.xml', recursive=True)
 
 
-def upload_files(server, ci_info, files):
+def upload_files(token, server, ci_info, files):
     if not files:
         raise SystemExit('No test files found')
+    ci_info['token'] = token
     with tempfile.NamedTemporaryFile() as fd:
         with tarfile.open(fd.name, 'w:gz') as tar:
             for filename in files:
@@ -56,12 +68,14 @@ def upload_files(server, ci_info, files):
 def main():
     parser = argparse.ArgumentParser('wacklig')
     parser.add_argument('--server', type=str, default='https://wacklig.pipifein.dev')
+    parser.add_argument('--token', type=str, required=True)
     args = parser.parse_args()
     print(args)
     ci_info = get_ci_info()
     print(ci_info)
     files = find_test_files()
-    upload_files(args.server, ci_info, files)
+    upload_files(args.token, args.server, ci_info, files)
+    print(f'Uploaded {len(files)} files')
 
 
 if __name__ == "__main__":
