@@ -62,7 +62,8 @@ def upload_files(token, server, ci_info, files):
                 tar.add(filename)
         ci_info = {k: v for (k, v) in ci_info.items() if v}
         params = ci_info and '?' + urlencode(ci_info) or ''
-        urlopen(server + '/api/v1/upload' + params, data=fd)
+        result = urlopen(server + '/api/v1/upload' + params, data=fd)
+        print(result.read().decode('utf-8'))
 
 
 def main():
@@ -70,9 +71,7 @@ def main():
     parser.add_argument('--server', type=str, default='https://wacklig.pipifein.dev')
     parser.add_argument('--token', type=str, required=True)
     args = parser.parse_args()
-    print(args)
     ci_info = get_ci_info()
-    print(ci_info)
     files = find_test_files()
     upload_files(args.token, args.server, ci_info, files)
     print(f'Uploaded {len(files)} files')
