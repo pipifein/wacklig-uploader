@@ -31,9 +31,28 @@ def jenkins_env():
     }
 
 
+def github_action_env():
+    data = {
+        'service': 'github-actions',
+        'commit': os.environ.get('GITHUB_SHA'),
+        'build': os.environ.get('GITHUB_RUN_ID'),
+    }
+    gh_ref = os.getenv("GITHUB_REF")
+    gh_head_ref = os.getenv('GITHUB_HEAD_REF')
+    if gh_head_ref:
+        data['branch'] = gh_head_ref
+        # PR ref format: refs/pull/1/merge
+        data['pr'] = gh_ref.split('/')[-2]
+    elif gh_ref:
+        data['branch'] = gh_ref.split("/", 3)[-1]
+    return data
+
+
 def get_ci_info():
     if os.environ.get('JENKINS_URL'):
         return jenkins_env()
+    if os.environ.get('GITHUB_ACTION'):
+        return github_action_env()
 
     return {
         'service': 'local',
