@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+  <testsuite name="wacklig_uploader" errors="0" failures="1" skipped="0" tests="9" time="0.118" timestamp="2021-12-18T03:51:53.894578" hostname="sink.local">
+    <testcase classname="tests.test_uploader" name="test_search_env_found" time="0.001"/>
+    <testcase classname="tests.test_uploader" name="test_search_env_notfound" time="0.000"/>
+    <testcase classname="tests.test_uploader" name="test_jenkins_env" time="0.002"/>
+    <testcase classname="tests.test_uploader" name="test_github_action_env" time="0.002"/>
+    <testcase classname="tests.test_uploader" name="test_get_ci_info_jenkins" time="0.002"/>
+    <testcase classname="tests.test_uploader" name="test_get_ci_info_github" time="0.001"/>
+    <testcase classname="tests.test_uploader" name="test_get_ci_info_local" time="0.001"/>
+    <testcase classname="tests.test_uploader" name="test_upload_files_empty" time="0.000"/>
+    <testcase classname="tests.test_uploader" name="test_upload_files_foo" time="0.003">
+      <failure message="SystemExit: No test files found">tmp_path = PosixPath('/private/var/folders/06/w9pzygdj7vx53n_0l9q_lhph0000gn/T/pytest-of-amo/pytest-5/test_upload_files_foo0')
+
+    def test_upload_files_foo(tmp_path):
+&gt;       upload_files(token=None, server=None, ci_info=None, files=None)
+
+tests/test_uploader.py:95: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+token = None, server = None, ci_info = None, files = None
+
+    def upload_files(token, server, ci_info, files):
+        if not files:
+&gt;           raise SystemExit('No test files found')
+E           SystemExit: No test files found
+
+wacklig.py:76: SystemExit</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

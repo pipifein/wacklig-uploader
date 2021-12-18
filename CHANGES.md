@@ -3,6 +3,8 @@
 
 ## in progress
 
+- Tests: Add test harness
+
 
 ## 0.3.0 (2021-07-01)
 
