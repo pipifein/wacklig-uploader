@@ -16,67 +16,10 @@ def test_search_env_notfound():
     assert value is None
 
 
+@mock.patch.dict(os.environ, {"JENKINS_URL": "https://jenkins.example.org/job/3f786850e3"})
 @mock.patch.dict(os.environ, {"ghprbSourceBranch": "testdrive"})
 @mock.patch.dict(os.environ, {"GIT_COMMIT": "3f786850e387550fdab836ed7e6dc881de23001b"})
 @mock.patch.dict(os.environ, {"ghprbPullId": "111"})
-@mock.patch.dict(os.environ, {"BUILD_NUMBER": "42"})
-def test_jenkins_env():
-    data = jenkins_env()
-    assert data == {
-        "service": "jenkins",
-        "branch": "testdrive",
-        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
-        "pr": "111",
-        "build": "42",
-    }
-
-
-@mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
-@mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
-def test_github_action_env():
-    data = github_action_env()
-    assert data == {
-        "service": "github-actions",
-        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
-        "build": "42",
-    }
-
-
-@mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
-@mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
-@mock.patch.dict(os.environ, {"GITHUB_REF": "refs/heads/feature-branch-1"})
-def test_github_action_env_with_branch():
-    data = github_action_env()
-    assert data == {
-        "service": "github-actions",
-        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
-        "build": "42",
-        "branch": "feature-branch-1",
-    }
-
-
-@mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
-@mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
-@mock.patch.dict(os.environ, {"GITHUB_REF": "refs/pull/111/merge"})
-@mock.patch.dict(os.environ, {"GITHUB_HEAD_REF": "feature-branch-1"})
-def test_github_action_env_with_pr():
-    data = github_action_env()
-    assert data == {
-        "service": "github-actions",
-        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
-        "build": "42",
-        "branch": "feature-branch-1",
-        "pr": "111",
-    }
-
-
-@mock.patch.dict(
-    os.environ,
-    {"JENKINS_URL": "https://jenkins.example.org/job/3f786850e387550fdab836ed7e6dc881de23001b"},
-)
-@mock.patch.dict(os.environ, {"ghprbSourceBranch": "testdrive"})
-@mock.patch.dict(os.environ, {"GIT_COMMIT": "3f786850e387550fdab836ed7e6dc881de23001b"})
-@mock.patch.dict(os.environ, {"ghprbPullId": "9999"})
 @mock.patch.dict(os.environ, {"BUILD_NUMBER": "42"})
 def test_get_ci_info_jenkins():
     data = get_ci_info()
@@ -84,20 +27,39 @@ def test_get_ci_info_jenkins():
         "service": "jenkins",
         "branch": "testdrive",
         "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
-        "pr": "9999",
+        "pr": "111",
         "build": "42",
     }
 
 
 @mock.patch.dict(os.environ, {"GITHUB_ACTION": "true"})
 @mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
+@mock.patch.dict(os.environ, {"GITHUB_REF": "refs/pull/111/merge"})
+@mock.patch.dict(os.environ, {"GITHUB_HEAD_REF": "feature-branch-1"})
 @mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
-def test_get_ci_info_github():
+def test_get_ci_info_github_with_pr():
     data = get_ci_info()
     assert data == {
         "service": "github-actions",
         "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
         "build": "42",
+        "branch": "feature-branch-1",
+        "pr": "111",
+    }
+
+
+@mock.patch.dict(os.environ, {"GITHUB_ACTION": "true"})
+@mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
+@mock.patch.dict(os.environ, {"GITHUB_REF": "refs/heads/feature-branch-1"})
+@mock.patch.dict(os.environ, {"GITHUB_HEAD_REF": ""})
+@mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
+def test_get_ci_info_github_with_branch():
+    data = get_ci_info()
+    assert data == {
+        "service": "github-actions",
+        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
+        "build": "42",
+        "branch": "feature-branch-1",
     }
 
 
