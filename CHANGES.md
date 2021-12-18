@@ -4,6 +4,7 @@
 ## in progress
 
 - Tests: Add test harness
+- Fix finding test report files recursively
 
 
 ## 0.3.0 (2021-07-01)

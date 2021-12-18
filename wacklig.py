@@ -69,7 +69,7 @@ def get_ci_info():
 
 
 def find_test_files():
-    return glob('**/test-results/test/*.xml', recursive=True)
+    return glob('**/test-results/test/**/*.xml', recursive=True)
 
 
 def upload_files(token, server, ci_info, files):
