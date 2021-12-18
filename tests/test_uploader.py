@@ -2,6 +2,7 @@ import io
 import os
 import re
 import tempfile
+from pathlib import Path
 from unittest import mock
 from unittest.mock import Mock
 
@@ -13,13 +14,13 @@ from wacklig import find_test_files, upload_files
 
 
 def test_find_test_files(fs):
-    fs.create_file(file_path="test-results/test/report1.xml")
-    fs.create_file(file_path="test-results/test/nested/report2.xml")
-    fs.create_file(file_path="test-results/test/nested/more/report3.xml")
+    fs.create_file(file_path=Path("test-results/test/report1.xml"))
+    fs.create_file(file_path=Path("test-results/test/nested/report2.xml"))
+    fs.create_file(file_path=Path("test-results/test/nested/more/report3.xml"))
     assert find_test_files() == [
-        "test-results/test/report1.xml",
-        "test-results/test/nested/report2.xml",
-        "test-results/test/nested/more/report3.xml",
+        str(Path("test-results/test/report1.xml")),
+        str(Path("test-results/test/nested/report2.xml")),
+        str(Path("test-results/test/nested/more/report3.xml")),
     ]
 
 
