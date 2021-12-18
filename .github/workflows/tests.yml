@@ -1,0 +1,73 @@
+name: Tests
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+
+    defaults:
+      run:
+        shell: bash
+
+    name: Python ${{ matrix.python-version }} on OS ${{ matrix.os }}
+    steps:
+
+    - name: Acquire sources
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+
+    - uses: actions/cache@v2
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+
+    - name: Run tests
+      run: |
+        pip install --requirement=requirements-test.txt
+        pytest
+
+    - name: Upload test results to wacklig
+      if: always()
+      continue-on-error: true
+      env:
+        WACKLIG_TOKEN: ${{ secrets.WACKLIG_TOKEN }}
+      shell: bash
+      run: |
+        curl -s https://raw.githubusercontent.com/pipifein/wacklig-uploader/master/wacklig.py | python - --token $WACKLIG_TOKEN \
+          && echo "Upload to wacklig succeeded" \
+          || errcode=$?; echo "Upload to wacklig failed"; exit $errcode
+
+#    - name: Generate coverage report
+#      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
+#      run: |
+#        coverage xml
+#
+#    - name: Upload coverage to Codecov
+#      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
+#      uses: codecov/codecov-action@v2
+#      with:
+#        files: ./coverage.xml
+#        flags: unittests
+#        env_vars: OS,PYTHON
+#        name: codecov-umbrella
+#        fail_ci_if_error: false
