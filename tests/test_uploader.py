@@ -75,3 +75,27 @@ def test_upload_files_success(tmp_path, capsys):
         os.unlink(filepath)
     except:  # pragma:nocover
         pass
+
+
+@mock.patch.dict(os.environ, {"GITHUB_ACTION": "true"})
+@mock.patch.dict(os.environ, {"GITHUB_SHA": "3f786850e387550fdab836ed7e6dc881de23001b"})
+@mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "42"})
+def test_main(mocker, fs, capsys):
+
+    # Prepare fixture data.
+    wacklig_server = "https://wacklig.example.org"
+    wacklig_token = "WACKLIG_TOKEN"
+    report_files = ["test-results/test/report1.xml", "test-results/test/nested/report2.xml"]
+
+    # Create files in fake filesystem.
+    list(map(fs.create_file, report_files))
+
+    # Pretend to invoke main program.
+    mocker.patch("sys.argv", ["wacklig-upload", "--server", wacklig_server, "--token", wacklig_token])
+    mocker.patch.object(wacklig, "find_test_files", Mock(return_value=report_files))
+    mocker.patch.object(wacklig, "urlopen", Mock(return_value=io.BytesIO(b"HTTP response body from wacklig service")))
+    wacklig.main()
+
+    # Proof that the expected message has been written to stdout.
+    stdout = capsys.readouterr().out.strip()
+    assert "Uploaded 2 files" in stdout

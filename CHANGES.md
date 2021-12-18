@@ -5,6 +5,7 @@
 
 - Tests: Add test harness
 - Fix finding test report files recursively
+- Tests: Add test for `main` function
 
 
 ## 0.3.0 (2021-07-01)
