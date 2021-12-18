@@ -30,9 +30,16 @@ def test_upload_files_empty():
     assert ex.match(re.escape("No test files found"))
 
 
+NamedTemporaryFile = tempfile.NamedTemporaryFile
+
+
+def tempfile_factory():
+    return NamedTemporaryFile(delete=False)
+
+
 # Augment `NamedTemporaryFile` to not being deleted. We need it for verifying.
-@mock.patch.object(wacklig.tempfile, "NamedTemporaryFile", Mock(return_value=tempfile.NamedTemporaryFile(delete=False)))
-def test_upload_files_success(tmp_path, capsys):
+@mock.patch.object(wacklig.tempfile, "NamedTemporaryFile", tempfile_factory)
+def test_upload_files_success(capsys):
 
     # Prepare fixture data.
     wacklig_server = "https://wacklig.example.org"
