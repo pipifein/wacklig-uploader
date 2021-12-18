@@ -7,6 +7,7 @@
 - Fix finding test report files recursively
 - Tests: Add test for `main` function
 - Tests: Run test harness on GHA
+- Tests: Add Windows to test matrix on CI/GHA
 
 
 ## 0.3.0 (2021-07-01)
