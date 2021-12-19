@@ -7,6 +7,7 @@ from unittest import mock
 from unittest.mock import Mock
 
 import pytest
+from mocket import Mocket, MocketEntry, Mocketizer
 
 import wacklig
 from tests.conftest import here
@@ -39,7 +40,7 @@ def tempfile_factory():
 
 # Augment `NamedTemporaryFile` to not being deleted. We need it for verifying.
 @mock.patch.object(wacklig.tempfile, "NamedTemporaryFile", tempfile_factory)
-def test_upload_files_success(capsys):
+def test_upload_files_success_synthetic(capsys):
 
     # Prepare fixture data.
     wacklig_server = "https://wacklig.example.org"
@@ -83,6 +84,37 @@ def test_upload_files_success(capsys):
         os.unlink(filepath)
     except:  # pragma:nocover
         pass
+
+
+def test_upload_files_success_real(capsys):
+
+    # Prepare fixture data.
+    wacklig_server = "https://wacklig.example.org"
+    wacklig_token = "WACKLIG_TOKEN"
+    ci_info = {
+        "service": "local",
+        "branch": "testdrive",
+        "commit": "3f786850e387550fdab836ed7e6dc881de23001b",
+    }
+    test_report_files = [os.path.join(here, "tests/junit-example.xml")]
+
+    # Invoke `upload_files` with mocked `socket` library.
+    with Mocketizer():
+        addr = ("wacklig.example.org", 443)
+        # TODO: Use a more realistic response payload here. Probably JSON?
+        Mocket.register(
+            MocketEntry(location=addr, responses=["HTTP/1.1 200 OK\r\n\r\nHTTP response body from wacklig service"])
+        )
+        upload_files(
+            token=wacklig_token,
+            server=wacklig_server,
+            ci_info=ci_info,
+            files=test_report_files,
+        )
+
+    # Proof that the HTTP response body has been printed to stdout.
+    stdout = capsys.readouterr().out.strip()
+    assert stdout == "HTTP response body from wacklig service"
 
 
 @mock.patch.dict(os.environ, {"GITHUB_ACTION": "true"})
