@@ -9,6 +9,8 @@
 - Tests: Run test harness on GHA
 - Tests: Add Windows to test matrix on CI/GHA
 - Tests: Fix tests on Windows
+- Add compatibility with Windows regarding exclusive write-lock
+  at `NamedTemporaryFile` vs. `tarfile.open`
 
 
 ## 0.3.0 (2021-07-01)

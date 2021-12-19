@@ -77,9 +77,10 @@ def upload_files(token, server, ci_info, files):
         raise SystemExit('No test files found')
     ci_info['token'] = token
     with tempfile.NamedTemporaryFile() as fd:
-        with tarfile.open(fd.name, 'w:gz') as tar:
+        with tarfile.open(fileobj=fd, mode='w:gz') as tar:
             for filename in files:
                 tar.add(filename)
+        fd.seek(0)
         ci_info = {k: v for (k, v) in ci_info.items() if v}
         params = ci_info and '?' + urlencode(ci_info) or ''
         result = urlopen(server + '/api/v1/upload' + params, data=fd)
