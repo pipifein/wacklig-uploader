@@ -45,7 +45,7 @@ def github_action_env():
         # PR ref format: refs/pull/1/merge
         data['pr'] = gh_ref.split('/')[-2]
     elif gh_ref:
-        data['branch'] = gh_ref.split("/", 3)[-1]
+        data['branch'] = gh_ref.split("/", 2)[-1]
     return data
 
 

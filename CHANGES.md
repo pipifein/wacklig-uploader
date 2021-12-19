@@ -11,6 +11,9 @@
 - Tests: Fix tests on Windows
 - Add compatibility with Windows regarding exclusive write-lock
   at `NamedTemporaryFile` vs. `tarfile.open`
+- Fix computing effective branch name from `GITHUB_REF`, when
+  running directly on a branch (no PR) on GHA and the branch
+  contained slashes
 
 
 ## 0.3.0 (2021-07-01)
