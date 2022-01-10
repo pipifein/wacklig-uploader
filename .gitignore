@@ -1,0 +1,5 @@
+/.idea
+/.venv*
+/test-results
+/.coverage
+__pycache__
