@@ -1,0 +1,24 @@
+[tool.isort]
+profile = "black"
+extend_skip = "wacklig.py"
+
+
+[tool.black]
+line_length = 120
+extend_exclude = "wacklig.py"
+
+
+[tool.pytest.ini_options]
+addopts = """
+    -vvv
+    --cov --cov-report=term-missing
+    --junit-xml=test-results/test/junit.xml
+"""
+
+junit_suite_name = "wacklig_uploader"
+
+# TODO: Write captured log messages to JUnit report: one of no|log|system-out|system-err|out-err|all
+# junit_logging =
+
+# TODO: Emit XML for schema: one of legacy|xunit1|xunit2
+# junit_family =
