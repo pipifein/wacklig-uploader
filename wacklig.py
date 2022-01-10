@@ -37,6 +37,7 @@ def github_action_env():
         'commit': os.environ.get('GITHUB_SHA'),
         'build': os.environ.get('GITHUB_RUN_ID'),
     }
+    # Examples: refs/heads/feature-branch-1, refs/pull/42/merge
     gh_ref = os.getenv("GITHUB_REF")
     gh_head_ref = os.getenv('GITHUB_HEAD_REF')
     if gh_head_ref:
@@ -68,7 +69,7 @@ def get_ci_info():
 
 
 def find_test_files():
-    return glob('**/test-results/test/*.xml', recursive=True)
+    return glob('**/test-results/test/**/*.xml', recursive=True)
 
 
 def upload_files(token, server, ci_info, files):
@@ -97,5 +98,5 @@ def main():
     print(f'Uploaded {len(files)} files')
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma:nocover
     main()
