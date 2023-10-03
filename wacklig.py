@@ -68,7 +68,8 @@ def get_ci_info():
 
 
 def find_test_files():
-    return glob('**/test-results/test/*.xml', recursive=True)
+    yield from glob('**/test-results/test/*.xml', recursive=True)
+    yield from glob('**/target/surefire-reports/*.xml', recursive=True)
 
 
 def upload_files(token, server, ci_info, files):
@@ -92,7 +93,7 @@ def main():
     parser.add_argument('--token', type=str, required=True)
     args = parser.parse_args()
     ci_info = get_ci_info()
-    files = find_test_files()
+    files = list(find_test_files())
     upload_files(args.token, args.server, ci_info, files)
     print(f'Uploaded {len(files)} files')
 
